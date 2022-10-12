@@ -5,6 +5,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
 import csv
+import os
 load_dotenv()
 
 # set up .env file with PLAYLIST_ID constant and link
@@ -28,17 +29,16 @@ def get_list_of_tunes_from_file(conversation):
 
     for message in messages:
         try:
-            if(message["content"].startswith("https://open.spotify.com/")):
+            if "https://open.spotify.com/track/" in message["content"]:
 
                 message_content = message["content"]
 
-                # cut extra url parameters like fb specification
-                tune_link = message_content[:79]
+                start = message_content.find("https://open.spotify.com/track/")
 
-                # the identifyier tag (?si=blahblahblah)
-                tune_link = tune_link[:53]
+                # magic numbers used for isolating just trackID code
+                track_code = message_content[start + 31: start + 53]
 
-                parameter_tune_link = "spotify:track:" + tune_link[31:]
+                parameter_tune_link = "spotify:track:" + track_code
 
                 list_of_tunes.append(parameter_tune_link)
 
@@ -69,12 +69,13 @@ def upload_new_tunes(list_of_new_tunes):
         
 def identify_new_tunes(list_of_all_tunes, old_tunes):
     new_tunes = [item for item in list_of_all_tunes if item not in old_tunes]
-    print(new_tunes)
     return new_tunes
 
 
 
 conversation_file = "message_1.json"
+
+# Uncomment these calls as you like
 
 list_of_all_tunes = get_list_of_tunes_from_file(conversation_file)
 
@@ -82,48 +83,6 @@ old_tunes = get_old_tunes_from_csv()
 
 list_of_new_tunes = identify_new_tunes(list_of_all_tunes, old_tunes)
 
-upload_new_tunes(list_of_new_tunes)
+# upload_new_tunes(list_of_new_tunes)
 
 save_uploaded_tunes_to_csv(list_of_all_tunes)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# print(list_of_tunes)
-
-# url = "https://api.spotify.com/v1/playlists/1A5jPs20h5bPMAllh9zHCH/tracks"
-
-# headers = CaseInsensitiveDict()
-# headers["Accept"] = "application/json"
-# headers["Content-Type"] = "application/json"
-# headers["Authorization"] = "Bearer BQCSTstFkjf_-oGb-C-SHeV8GfIEXY2BQMOOp_sUA-EO8BWF6WK93FV4r_kkiQKXNB4TlsVxkks38n7Y1oYya4QD3nW4UEVkDdyfVy4KgnqHyyJuZytHE8MPM_k04_q8MZEjnGjiCz2iZKh_d6fKBQ80KxEbITVchxuDVsIDWv0AZ6-i9v3XM-BLR-OWaBl_S-Y7eyRCj-xb9g"
-# headers["Content-Length"] = "0"
-
-# params = CaseInsensitiveDict()
-# params["position"] = "0"
-
-# for tune in list_of_tunes:
-#     params["uris"] = tune
-#     resp = requests.post(url, headers=headers, params=params)
-#     print(resp.content)
-
-
-
-
-# # https://open.spotify.com/track/3FpRoDRfpSJzv2oNuJ2zGj?si=9fda3f0c86f247f3"
