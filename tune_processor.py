@@ -7,7 +7,18 @@ from dotenv import load_dotenv
 import csv
 load_dotenv()
 
+# set up .env file with PLAYLIST_ID constant and link
+PLAYLIST_ID = os.environ.get("PLAYLIST_ID")
+
+# also put:
+# SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET, and SPOTIPY_REDIRECT_URI in .env
+# as per the Spotipy documenation
+
 def get_list_of_tunes_from_file(conversation):
+
+    ''' given a Messenger downloaded chat history in json format, this function
+        will return a list of all the spotify tracks shared in it in list form
+        '''
 
     f = open(conversation)
     data = json.load(f)
@@ -54,7 +65,7 @@ def upload_new_tunes(list_of_new_tunes):
     sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
     for tune in list_of_new_tunes:
-        sp.playlist_add_items("1A5jPs20h5bPMAllh9zHCH", [tune])
+        sp.playlist_add_items(PLAYLIST_ID, [tune])
         
 def identify_new_tunes(list_of_all_tunes, old_tunes):
     new_tunes = [item for item in list_of_all_tunes if item not in old_tunes]
@@ -67,15 +78,13 @@ conversation_file = "message_1.json"
 
 list_of_all_tunes = get_list_of_tunes_from_file(conversation_file)
 
-# old_tunes = get_old_tunes_from_csv()
+old_tunes = get_old_tunes_from_csv()
 
-# list_of_new_tunes = identify_new_tunes(list_of_all_tunes, old_tunes)
+list_of_new_tunes = identify_new_tunes(list_of_all_tunes, old_tunes)
 
-# upload_new_tunes(list_of_new_tunes)
-print(list_of_all_tunes)
-# upload_new_tunes(list_of_all_tunes)
+upload_new_tunes(list_of_new_tunes)
 
-# save_uploaded_tunes_to_csv(list_of_all_tunes)
+save_uploaded_tunes_to_csv(list_of_all_tunes)
 
 
 
