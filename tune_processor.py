@@ -67,22 +67,28 @@ def upload_new_tunes(list_of_new_tunes):
     for tune in list_of_new_tunes:
         sp.playlist_add_items(PLAYLIST_ID, [tune])
         
-def identify_new_tunes(list_of_all_tunes, old_tunes):
-    new_tunes = [item for item in list_of_all_tunes if item not in old_tunes]
+def identify_new_tunes(list_of_potentially_new_tunes, old_tunes):
+    new_tunes = [item for item in list_of_potentially_new_tunes if item not in old_tunes]
     return new_tunes
 
-
+def add_new_tunes_to_old(list_of_new_tunes):
+    old_tunes = get_old_tunes_from_csv()
+    old_tunes.extend(list_of_new_tunes)
+    save_uploaded_tunes_to_csv(old_tunes)
 
 conversation_file = "message_1.json"
 
 # Uncomment these calls as you like
 
-list_of_all_tunes = get_list_of_tunes_from_file(conversation_file)
+# next time we come back to these we need to go back to the beginning of the 
+# chat history 
+
+# list_of_potentially_new_tunes = get_list_of_tunes_from_file(conversation_file)
 
 old_tunes = get_old_tunes_from_csv()
 
-list_of_new_tunes = identify_new_tunes(list_of_all_tunes, old_tunes)
+# list_of_new_tunes = identify_new_tunes(list_of_potentially_new_tunes, old_tunes)
 
 # upload_new_tunes(list_of_new_tunes)
 
-save_uploaded_tunes_to_csv(list_of_all_tunes)
+# add_new_tunes_to_old(list_of_potentially_new_tunes)
